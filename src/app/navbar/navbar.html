@@ -1,0 +1,22 @@
+<div class="navbar">
+  <div class="logo">BlackStraw Biriyani</div>
+
+  <!-- Hidden Checkbox -->
+  <input type="checkbox" id="menu-toggle" />
+  <label for="menu-toggle" class="hamburger">&#9776;</label>
+
+  <ul class="nav-links">
+    @if(session){
+    <li><a routerLink="session" routerLinkActive="active">Home</a></li>}
+    @else{
+      <li><a routerLink="" routerLinkActive="active">Home</a></li>
+    }
+    <li><a routerLink="History" routerLinkActive="active">History</a></li>
+    <li><a routerLink="About" routerLinkActive="active">About</a></li>
+    @if(session){
+    <li><a routerLink="about" routerLinkActive="active">Logout</a></li>}
+    @else{
+      <li><a routerLink="about" routerLinkActive="active">Login</a></li>
+    }
+  </ul>
+</div>
