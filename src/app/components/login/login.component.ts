@@ -22,7 +22,7 @@ export class LoginComponent {
     private router: Router
   ) {
     this.loginForm = this.fb.group({
-      username: ['', [Validators.required]],
+      employeeId: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
@@ -37,7 +37,7 @@ export class LoginComponent {
     this.errorMessage = '';
 
     const credentials = {
-      username: this.loginForm.get('username')?.value,
+      employeeId: this.loginForm.get('employeeId')?.value,
       password: this.loginForm.get('password')?.value
     };
 
@@ -55,8 +55,8 @@ export class LoginComponent {
     });
   }
 
-  get username() {
-    return this.loginForm.get('username');
+  get employeeId() {
+    return this.loginForm.get('employeeId');
   }
 
   get password() {

@@ -5,16 +5,16 @@
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
-        <label for="username">Username</label>
+        <label for="employeeId">Employee ID</label>
         <input
           type="text"
-          id="username"
-          formControlName="username"
-          placeholder="Enter your username"
-          [class.error]="username?.invalid && username?.touched"
+          id="employeeId"
+          formControlName="employeeId"
+          placeholder="Enter your employee ID"
+          [class.error]="employeeId?.invalid && employeeId?.touched"
         />
-        <div class="error-message" *ngIf="username?.invalid && username?.touched">
-          <span *ngIf="username?.errors?.['required']">Username is required</span>
+        <div class="error-message" *ngIf="employeeId?.invalid && employeeId?.touched">
+          <span *ngIf="employeeId?.errors?.['required']">Employee ID is required</span>
         </div>
       </div>
 

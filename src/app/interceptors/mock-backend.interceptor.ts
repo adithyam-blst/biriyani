@@ -21,15 +21,16 @@ export const mockBackendInterceptor: HttpInterceptorFn = (
 
   // Mock login endpoint
   if (req.url === '/api/auth/login' && req.method === 'POST') {
-    const body = req.body as { username: string; password: string };
+    const body = req.body as { employeeId: string; password: string };
     
     // Simulate validation
-    if (body?.username && body?.password && body.password.length >= 6) {
+    if (body?.employeeId && body?.password && body.password.length >= 6) {
       // Return mock successful response
       return of(new HttpResponse({
         status: 200,
         body: {
           token: 'mock_jwt_token_' + Date.now(),
+          employeeId: body.employeeId,
           message: 'Login successful'
         }
       })).pipe(delay(500)); // Simulate network delay
@@ -42,6 +43,45 @@ export const mockBackendInterceptor: HttpInterceptorFn = (
         }
       })).pipe(delay(500));
     }
+  }
+
+  // Mock order history endpoint
+  if (req.url.includes('/api/orders/history') && req.method === 'GET') {
+    const employeeId = req.headers.get('X-Employee-Id') || 'unknown';
+    
+    // Return mock order history for the employee
+    return of(new HttpResponse({
+      status: 200,
+      body: {
+        employeeId: employeeId,
+        orders: [
+          {
+            orderId: 'ORD-001',
+            date: '2024-03-01',
+            item: 'Chicken Biriyani',
+            quantity: 2,
+            total: 300,
+            status: 'Delivered'
+          },
+          {
+            orderId: 'ORD-002',
+            date: '2024-02-28',
+            item: 'Mutton Biriyani',
+            quantity: 1,
+            total: 250,
+            status: 'Delivered'
+          },
+          {
+            orderId: 'ORD-003',
+            date: '2024-02-25',
+            item: 'Veg Biriyani',
+            quantity: 3,
+            total: 450,
+            status: 'Cancelled'
+          }
+        ]
+      }
+    })).pipe(delay(300));
   }
 
   // Default: pass through (or return 404 for unimplemented endpoints)

@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap, catchError, throwError } from 'rxjs';
+import { clearOrderHistoryCache } from '../interceptors/order-history.interceptor';
 
 interface LoginResponse {
   token: string;
 }
 
 interface LoginCredentials {
-  username: string;
+  employeeId: string;
   password: string;
 }
 
@@ -17,6 +18,7 @@ interface LoginCredentials {
 export class AuthService {
   private readonly TOKEN_KEY = 'biriyani_jwt_token';
   private readonly EXPIRY_KEY = 'biriyani_token_expiry';
+  private readonly EMPLOYEE_ID_KEY = 'biriyani_employee_id';
   private readonly API_BASE_URL = '/api'; // Configurable base URL
   
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasValidToken());
@@ -32,6 +34,7 @@ export class AuthService {
       }),
       tap(response => {
         this.setToken(response.token);
+        this.setEmployeeId(credentials.employeeId);
         this.isAuthenticatedSubject.next(true);
       })
     );
@@ -40,6 +43,9 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.EXPIRY_KEY);
+    localStorage.removeItem(this.EMPLOYEE_ID_KEY);
+    // Clear order history cache for security
+    clearOrderHistoryCache();
     this.isAuthenticatedSubject.next(false);
   }
 
@@ -56,6 +62,14 @@ export class AuthService {
     }
     this.logout();
     return null;
+  }
+
+  private setEmployeeId(employeeId: string): void {
+    localStorage.setItem(this.EMPLOYEE_ID_KEY, employeeId);
+  }
+
+  getEmployeeId(): string | null {
+    return localStorage.getItem(this.EMPLOYEE_ID_KEY);
   }
 
   private hasValidToken(): boolean {
