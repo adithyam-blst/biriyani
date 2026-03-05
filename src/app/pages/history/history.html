@@ -1,1 +1,293 @@
-<p>history works!</p>
+<div class="history-container">
+  <!-- Header Section -->
+  <div class="history-header">
+    <h1 class="page-title">
+      <span class="title-icon">📜</span>
+      Order History
+    </h1>
+    <p class="page-subtitle">Track your biriyani orders and their delivery status</p>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading()">
+    <div class="loading-spinner"></div>
+    <p>Loading your orders...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-state" *ngIf="error() && !isLoading()">
+    <div class="error-icon">⚠️</div>
+    <p>{{ error() }}</p>
+    <button class="retry-btn" (click)="loadOrderHistory()">
+      Try Again
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="history-content" *ngIf="!isLoading() && !error()">
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="orders().length === 0">
+      <div class="empty-icon">🍛</div>
+      <h3>No Orders Yet</h3>
+      <p>Looks like you haven't placed any biriyani orders. Time to satisfy those cravings!</p>
+      <a routerLink="/session" class="order-now-btn">Order Now</a>
+    </div>
+
+    <!-- Orders List -->
+    <div class="orders-section" *ngIf="orders().length > 0">
+      <!-- Stats Summary -->
+      <div class="stats-cards">
+        <div class="stat-card total">
+          <span class="stat-icon">📦</span>
+          <div class="stat-info">
+            <span class="stat-value">{{ statusCounts().all }}</span>
+            <span class="stat-label">Total Orders</span>
+          </div>
+        </div>
+        <div class="stat-card delivered">
+          <span class="stat-icon">🎉</span>
+          <div class="stat-info">
+            <span class="stat-value">{{ statusCounts().delivered }}</span>
+            <span class="stat-label">Delivered</span>
+          </div>
+        </div>
+        <div class="stat-card pending">
+          <span class="stat-icon">⏳</span>
+          <div class="stat-info">
+            <span class="stat-value">{{ statusCounts().pending + statusCounts().preparing + statusCounts().ready }}</span>
+            <span class="stat-label">In Progress</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="filter-tabs">
+        <button 
+          class="filter-tab" 
+          [class.active]="filterStatus() === 'all'"
+          (click)="setFilter('all')">
+          All ({{ statusCounts().all }})
+        </button>
+        <button 
+          class="filter-tab" 
+          [class.active]="filterStatus() === 'pending'"
+          (click)="setFilter('pending')"
+          *ngIf="statusCounts().pending > 0">
+          ⏳ Pending ({{ statusCounts().pending }})
+        </button>
+        <button 
+          class="filter-tab" 
+          [class.active]="filterStatus() === 'preparing'"
+          (click)="setFilter('preparing')"
+          *ngIf="statusCounts().preparing > 0">
+          👨‍🍳 Preparing ({{ statusCounts().preparing }})
+        </button>
+        <button 
+          class="filter-tab" 
+          [class.active]="filterStatus() === 'ready'"
+          (click)="setFilter('ready')"
+          *ngIf="statusCounts().ready > 0">
+          ✅ Ready ({{ statusCounts().ready }})
+        </button>
+        <button 
+          class="filter-tab" 
+          [class.active]="filterStatus() === 'delivered'"
+          (click)="setFilter('delivered')"
+          *ngIf="statusCounts().delivered > 0">
+          🎉 Delivered ({{ statusCounts().delivered }})
+        </button>
+        <button 
+          class="filter-tab" 
+          [class.active]="filterStatus() === 'cancelled'"
+          (click)="setFilter('cancelled')"
+          *ngIf="statusCounts().cancelled > 0">
+          ❌ Cancelled ({{ statusCounts().cancelled }})
+        </button>
+      </div>
+
+      <!-- Orders Grid -->
+      <div class="orders-grid">
+        @for (order of filteredOrders(); track order.orderId) {
+          <div class="order-card" (click)="showOrderDetails(order)">
+            <!-- Card Header -->
+            <div class="card-header">
+              <div class="order-id">
+                <span class="label">Order ID</span>
+                <span class="value">#{{ order.orderId?.slice(-6) || 'N/A' }}</span>
+              </div>
+              <div 
+                class="status-badge" 
+                [style.background-color]="getStatusColor(order.status) + '20'"
+                [style.color]="getStatusColor(order.status)">
+                <span class="status-icon">{{ getStatusIcon(order.status) }}</span>
+                <span class="status-text">{{ getStatusLabel(order.status) }}</span>
+              </div>
+            </div>
+
+            <!-- Card Body -->
+            <div class="card-body">
+              <div class="items-preview">
+                @for (item of order.items.slice(0, 2); track item.biriyaniId) {
+                  <div class="item-row">
+                    <span class="item-qty">{{ item.quantity }}x</span>
+                    <span class="item-name">{{ item.name }}</span>
+                  </div>
+                }
+                @if (order.items.length > 2) {
+                  <div class="more-items">+{{ order.items.length - 2 }} more</div>
+                }
+              </div>
+
+              <!-- Progress Bar -->
+              <div class="progress-section" *ngIf="order.status !== 'cancelled'">
+                <div class="progress-bar">
+                  <div 
+                    class="progress-fill" 
+                    [style.width.%]="getProgressPercentage(order.status)"
+                    [style.background-color]="getStatusColor(order.status)">
+                  </div>
+                </div>
+                <div class="progress-labels">
+                  <span class="label" [class.active]="order.status === 'pending'">Ordered</span>
+                  <span class="label" [class.active]="order.status === 'preparing'">Cooking</span>
+                  <span class="label" [class.active]="order.status === 'ready'">Ready</span>
+                  <span class="label" [class.active]="order.status === 'delivered'">Delivered</span>
+                </div>
+              </div>
+
+              <!-- Cancelled State -->
+              <div class="cancelled-state" *ngIf="order.status === 'cancelled'">
+                <span class="cancelled-icon">❌</span>
+                <span>This order was cancelled</span>
+              </div>
+            </div>
+
+            <!-- Card Footer -->
+            <div class="card-footer">
+              <div class="order-info">
+                <div class="info-row">
+                  <span class="icon">📅</span>
+                  <span class="text">{{ formatDate(order.orderDate) }}</span>
+                </div>
+                <div class="info-row" *ngIf="order.deliveryLocation">
+                  <span class="icon">📍</span>
+                  <span class="text">{{ order.deliveryLocation }}</span>
+                </div>
+              </div>
+              <div class="order-total">
+                <span class="label">Total</span>
+                <span class="amount">₹{{ order.totalAmount }}</span>
+              </div>
+            </div>
+
+            <!-- Cancel Button -->
+            <button 
+              class="cancel-order-btn" 
+              *ngIf="canCancel(order.status)"
+              (click)="cancelOrder(order, $event)">
+              Cancel Order
+            </button>
+          </div>
+        }
+      </div>
+
+      <!-- No Filtered Results -->
+      <div class="no-results" *ngIf="filteredOrders().length === 0 && orders().length > 0">
+        <div class="no-results-icon">🔍</div>
+        <p>No orders found for this filter</p>
+        <button class="clear-filter-btn" (click)="setFilter('all')">
+          View All Orders
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Order Details Modal -->
+<div class="modal-overlay" *ngIf="showDetails()" (click)="closeDetails()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Order Details</h3>
+      <button class="close-btn" (click)="closeDetails()">✕</button>
+    </div>
+
+    <div class="modal-body" *ngIf="selectedOrder()">
+      <!-- Order Info -->
+      <div class="detail-section">
+        <div class="detail-row">
+          <span class="label">Order ID:</span>
+          <span class="value">#{{ selectedOrder()?.orderId }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Status:</span>
+          <span 
+            class="status-badge" 
+            [style.background-color]="getStatusColor(selectedOrder()!.status) + '20'"
+            [style.color]="getStatusColor(selectedOrder()!.status)">
+            {{ getStatusLabel(selectedOrder()!.status) }}
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Order Date:</span>
+          <span class="value">{{ formatDate(selectedOrder()!.orderDate) }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Delivery:</span>
+          <span class="value">{{ formatDeliveryDate(selectedOrder()!.deliveryDate) }}</span>
+        </div>
+      </div>
+
+      <!-- Items -->
+      <div class="detail-section items-section">
+        <h4>🍛 Items Ordered</h4>
+        <div class="items-list">
+          @for (item of selectedOrder()?.items; track item.biriyaniId) {
+            <div class="detail-item">
+              <div class="item-info">
+                <span class="item-name">{{ item.name }}</span>
+                <span class="item-spice">{{ item.spiceLevel }}</span>
+              </div>
+              <div class="item-pricing">
+                <span class="item-qty">{{ item.quantity }}x</span>
+                <span class="item-price">₹{{ item.price * item.quantity }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Special Instructions -->
+      <div class="detail-section" *ngIf="selectedOrder()?.specialInstructions">
+        <h4>📝 Special Instructions</h4>
+        <p class="instructions-text">{{ selectedOrder()?.specialInstructions }}</p>
+      </div>
+
+      <!-- Delivery Info -->
+      <div class="detail-section">
+        <h4>📍 Delivery Information</h4>
+        <div class="detail-row">
+          <span class="label">Location:</span>
+          <span class="value">{{ selectedOrder()?.deliveryLocation || 'Office Desk' }}</span>
+        </div>
+      </div>
+
+      <!-- Total -->
+      <div class="detail-section total-section">
+        <div class="total-row">
+          <span class="total-label">Total Amount</span>
+          <span class="total-amount">₹{{ selectedOrder()?.totalAmount }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button 
+        class="cancel-btn" 
+        *ngIf="selectedOrder() && canCancel(selectedOrder()!.status)"
+        (click)="cancelOrder(selectedOrder()!, $event); closeDetails()">
+        Cancel Order
+      </button>
+      <button class="close-modal-btn" (click)="closeDetails()">Close</button>
+    </div>
+  </div>
+</div>

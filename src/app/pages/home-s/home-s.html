@@ -1,1 +1,201 @@
-<p>home-s works!</p>
+<div class="biriyani-container">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="hero-badge" *ngIf="isBiriyaniFriday()">
+        🔥 It's Biriyani Friday! 🔥
+      </div>
+      <div class="hero-badge next-friday" *ngIf="!isBiriyaniFriday()">
+        Next Biriyani Friday: {{ nextFriday() | date:'EEEE, MMMM d' }}
+      </div>
+      <h1 class="hero-title">
+        <span class="title-highlight">🍛</span>
+        BlackStraw Biriyani
+      </h1>
+      <p class="hero-subtitle">Authentic flavors, delivered to your desk</p>
+      <p class="hero-welcome" *ngIf="employeeName()">Welcome, {{ employeeName() }}! 👋</p>
+      <button class="cta-button" (click)="scrollToMenu()">
+        Order Now
+        <span class="arrow">→</span>
+      </button>
+    </div>
+    <div class="hero-decoration">
+      <div class="floating-emoji">🍛</div>
+      <div class="floating-emoji">🥘</div>
+      <div class="floating-emoji">🌶️</div>
+    </div>
+  </section>
+
+  <!-- Menu Section -->
+  <section class="menu-section" id="menu-section">
+    <div class="menu-header">
+      <h2 class="section-title">Our Menu</h2>
+      <p class="section-subtitle">Choose your favorite biriyani</p>
+      
+      <!-- Category Filter -->
+      <div class="category-filter">
+        <button 
+          class="filter-btn" 
+          [class.active]="activeCategory() === 'all'"
+          (click)="setCategory('all')">
+          All
+        </button>
+        <button 
+          class="filter-btn" 
+          [class.active]="activeCategory() === 'veg'"
+          (click)="setCategory('veg')">
+          🥬 Vegetarian
+        </button>
+        <button 
+          class="filter-btn" 
+          [class.active]="activeCategory() === 'non-veg'"
+          (click)="setCategory('non-veg')">
+          🍗 Non-Veg
+        </button>
+      </div>
+    </div>
+
+    <!-- Biriyani Grid -->
+    <div class="biriyani-grid">
+      @for (biriyani of filteredBiriyanis(); track biriyani.id) {
+        <div class="biriyani-card" [class.unavailable]="!biriyani.isAvailable">
+          <div class="card-header">
+            <span class="biriyani-emoji">{{ biriyani.image }}</span>
+            <span class="category-badge" [class.veg]="biriyani.category === 'veg'">
+              {{ biriyani.category === 'veg' ? '🥬 Veg' : '🍗 Non-Veg' }}
+            </span>
+          </div>
+          
+          <div class="card-body">
+            <h3 class="biriyani-name">{{ biriyani.name }}</h3>
+            <p class="biriyani-description">{{ biriyani.description }}</p>
+            
+            <div class="spice-selector">
+              <label>Spice Level:</label>
+              <select [(ngModel)]="selectedSpiceLevels[biriyani.id]" class="spice-select">
+                <option value="mild">🌶️ Mild</option>
+                <option value="medium">🌶️🌶️ Medium</option>
+                <option value="hot">🌶️🌶️🌶️ Hot</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="card-footer">
+            <div class="price-tag">
+              <span class="currency">₹</span>
+              <span class="price">{{ biriyani.price }}</span>
+            </div>
+            <button 
+              class="add-btn" 
+              (click)="addToCart(biriyani)"
+              [disabled]="!biriyani.isAvailable">
+              <span *ngIf="biriyani.isAvailable">+ Add to Cart</span>
+              <span *ngIf="!biriyani.isAvailable">Unavailable</span>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Floating Cart Button -->
+  <button class="floating-cart-btn" (click)="toggleCart()" *ngIf="totalItems() > 0">
+    <span class="cart-icon">🛒</span>
+    <span class="cart-count">{{ totalItems() }}</span>
+  </button>
+
+  <!-- Cart Sidebar -->
+  <div class="cart-sidebar" [class.open]="showCart()">
+    <div class="cart-header">
+      <h3>🛒 Your Order</h3>
+      <button class="close-btn" (click)="toggleCart()">✕</button>
+    </div>
+    
+    <div class="cart-items" *ngIf="cart().length > 0">
+      @for (item of cart(); track item.biriyaniId + item.spiceLevel) {
+        <div class="cart-item">
+          <div class="item-info">
+            <span class="item-name">{{ item.name }}</span>
+            <span class="item-spice">{{ getSpiceEmoji(item.spiceLevel) }}</span>
+          </div>
+          <div class="item-controls">
+            <button class="qty-btn" (click)="updateQuantity(item, -1)">−</button>
+            <span class="qty-value">{{ item.quantity }}</span>
+            <button class="qty-btn" (click)="updateQuantity(item, 1)">+</button>
+          </div>
+          <div class="item-price">
+            ₹{{ item.price * item.quantity }}
+          </div>
+          <button class="remove-btn" (click)="removeFromCart(item)">🗑️</button>
+        </div>
+      }
+    </div>
+    
+    <div class="cart-empty" *ngIf="cart().length === 0">
+      <span class="empty-icon">🛒</span>
+      <p>Your cart is empty</p>
+    </div>
+
+    <div class="cart-summary" *ngIf="cart().length > 0">
+      <div class="summary-row">
+        <span>Subtotal</span>
+        <span>₹{{ totalAmount() }}</span>
+      </div>
+      <div class="summary-row total">
+        <span>Total</span>
+        <span>₹{{ totalAmount() }}</span>
+      </div>
+    </div>
+
+    <!-- Special Instructions -->
+    <div class="special-instructions" *ngIf="cart().length > 0">
+      <label>Special Instructions (Optional)</label>
+      <textarea 
+        [(ngModel)]="specialInstructions" 
+        placeholder="Any allergies or special requests..."
+        rows="3">
+      </textarea>
+    </div>
+
+    <!-- Delivery Location -->
+    <div class="delivery-location" *ngIf="cart().length > 0">
+      <label>Delivery Location</label>
+      <select [(ngModel)]="deliveryLocation">
+        <option value="Office Desk">Office Desk</option>
+        <option value="Conference Room">Conference Room</option>
+        <option value="Break Area">Break Area</option>
+        <option value="Other">Other (specify in instructions)</option>
+      </select>
+    </div>
+
+    <!-- Place Order Button -->
+    <button 
+      class="place-order-btn" 
+      *ngIf="cart().length > 0"
+      (click)="placeOrder()"
+      [disabled]="isPlacingOrder()">
+      <span *ngIf="!isPlacingOrder()">Place Order • ₹{{ totalAmount() }}</span>
+      <span *ngIf="isPlacingOrder()">Processing...</span>
+    </button>
+  </div>
+
+  <!-- Cart Overlay -->
+  <div class="cart-overlay" [class.show]="showCart()" (click)="toggleCart()"></div>
+
+  <!-- Success Message -->
+  <div class="success-modal" *ngIf="orderSuccess()">
+    <div class="success-content">
+      <div class="success-icon">🎉</div>
+      <h3>Order Placed Successfully!</h3>
+      <p>Your biriyani will be delivered soon. Check your order history for updates.</p>
+      <button class="success-btn" (click)="orderSuccess.set(false)">Awesome!</button>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div class="error-alert" *ngIf="orderError()">
+    <span class="error-icon">⚠️</span>
+    <span>{{ orderError() }}</span>
+    <button class="error-close" (click)="orderError.set('')">✕</button>
+  </div>
+</div>

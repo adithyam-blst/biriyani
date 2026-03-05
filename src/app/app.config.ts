@@ -6,8 +6,8 @@ import { routes } from './app.routes';
 import { authInterceptor } from './interceptors/auth.interceptor';
 import { authUserInterceptor } from './interceptors/auth-user.interceptor';
 import { orderHistoryInterceptor } from './interceptors/order-history.interceptor';
-// Uncomment the line below to use mock backend for development (no real API needed)
-// import { mockBackendInterceptor } from './interceptors/mock-backend.interceptor';
+// Import mock backend for development (no real API needed)
+import { mockBackendInterceptor } from './interceptors/mock-backend.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,9 +20,13 @@ export const appConfig: ApplicationConfig = {
     // 4. authInterceptor - legacy interceptor (can be removed if using authUserInterceptor)
     //
     // For development with mock backend:
-    // provideHttpClient(withInterceptors([mockBackendInterceptor, authUserInterceptor, orderHistoryInterceptor]))
+    provideHttpClient(withInterceptors([
+      mockBackendInterceptor, 
+      authUserInterceptor, 
+      orderHistoryInterceptor
+    ]))
     //
     // For production with real backend:
-    provideHttpClient(withInterceptors([authUserInterceptor, orderHistoryInterceptor]))
+    // provideHttpClient(withInterceptors([authUserInterceptor, orderHistoryInterceptor]))
   ]
 };
