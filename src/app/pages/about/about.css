@@ -1,0 +1,273 @@
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  padding: 60px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(255,193,7,0.1) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.min-vh-75 {
+  min-height: 75vh;
+}
+
+.hero-image-wrapper {
+  position: relative;
+  padding: 40px;
+}
+
+.biriyani-plate {
+  width: 250px;
+  height: 250px;
+  background: linear-gradient(145deg, #fff 0%, #f8f9fa 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  box-shadow: 
+    0 20px 60px rgba(0,0,0,0.3),
+    inset 0 -10px 30px rgba(0,0,0,0.1),
+    inset 0 10px 30px rgba(255,255,255,0.8);
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+.floating-icons {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.floating-icon {
+  position: absolute;
+  font-size: 1.5rem;
+  animation: float-icon 2s ease-in-out infinite;
+  opacity: 0.8;
+}
+
+.floating-icon:nth-child(2) { animation-delay: 0.5s; }
+.floating-icon:nth-child(3) { animation-delay: 1s; }
+.floating-icon:nth-child(4) { animation-delay: 1.5s; }
+
+@keyframes float-icon {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-15px) scale(1.1); }
+}
+
+.text-orange {
+  color: #fd7e14;
+}
+
+/* Section Styling */
+section {
+  position: relative;
+}
+
+.divider {
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #ffc107, #ff6b6b);
+  border-radius: 2px;
+}
+
+/* Tradition Cards */
+.tradition-card {
+  transition: all 0.3s ease;
+  border-radius: 16px;
+}
+
+.tradition-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+}
+
+.icon-wrapper {
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Feature Section */
+.feature-image-wrapper {
+  padding: 20px;
+}
+
+.feature-image-wrapper .bg-warning {
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.experience-badge {
+  bottom: 0;
+  right: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.icon-box {
+  min-width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Timeline */
+.timeline {
+  position: relative;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 12.5%;
+  right: 12.5%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #ffc107, transparent);
+}
+
+.timeline-year {
+  font-size: 0.9rem;
+}
+
+.timeline-item {
+  padding: 20px 10px;
+}
+
+/* Stats Section */
+.stat-item {
+  padding: 20px;
+}
+
+.stat-item h3 {
+  font-size: 2.5rem;
+}
+
+/* CTA Section */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 2px solid #ffc107;
+}
+
+/* Button Hover Effects */
+.btn {
+  transition: all 0.3s ease;
+}
+
+.btn-warning:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255,193,7,0.4);
+}
+
+.btn-outline-light:hover {
+  transform: translateY(-2px);
+}
+
+/* Card Hover Effects */
+.card {
+  transition: all 0.3s ease;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 991.98px) {
+  .hero-section {
+    padding: 40px 0;
+  }
+  
+  .min-vh-75 {
+    min-height: auto;
+    padding: 40px 0;
+  }
+  
+  .biriyani-plate {
+    width: 180px;
+    height: 180px;
+  }
+  
+  .timeline::before {
+    display: none;
+  }
+  
+  .timeline-item {
+    border-bottom: 1px solid rgba(255,193,7,0.3);
+  }
+  
+  .timeline-item:last-child {
+    border-bottom: none;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .display-3 {
+    font-size: 2.5rem;
+  }
+  
+  .display-5 {
+    font-size: 1.75rem;
+  }
+  
+  .stat-item h3 {
+    font-size: 2rem;
+  }
+}
+
+/* Smooth Scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Animation Classes */
+.fade-in {
+  animation: fadeIn 0.8s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Badge Styling */
+.badge {
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ffc107;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #e0a800;
+}
