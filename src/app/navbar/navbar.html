@@ -6,9 +6,14 @@
   <label for="menu-toggle" class="hamburger">&#9776;</label>
 
   <ul class="nav-links">
+    <li><a routerLink="" routerLinkActive="active">Home</a></li>
     <li><a routerLink="" routerLinkActive="active">Booking</a></li>
     <li><a routerLink="products" routerLinkActive="active">History</a></li>
     <li><a routerLink="about" routerLinkActive="active">About</a></li>
-    <li><a routerLink="about" routerLinkActive="active">Logout</a></li>
+    @if(session()){
+    <li><a routerLink="about" routerLinkActive="active">Logout</a></li>}
+    @else{
+      <li><a routerLink="about" routerLinkActive="active">Login</a></li>
+    }
   </ul>
 </div>
