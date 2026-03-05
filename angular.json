@@ -4,6 +4,7 @@
   "cli": {
     "packageManager": "npm",
     "analytics": "b277a62c-ee9b-499e-8fe0-926d1f772ee8"
+
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -55,6 +56,9 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          },
           "configurations": {
             "production": {
               "buildTarget": "biriyani:build:production"
