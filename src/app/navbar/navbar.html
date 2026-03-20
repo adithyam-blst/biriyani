@@ -1,22 +1,83 @@
 <div class="navbar">
-  <div class="logo">BlackStraw Biriyani</div>
+  <div class="logo">
+    <span class="logo-icon">🍛</span>
+    <span class="logo-text">BlackStraw<span class="highlight">Biriyani</span></span>
+  </div>
 
-  <!-- Hidden Checkbox -->
-  <input type="checkbox" id="menu-toggle" />
-  <label for="menu-toggle" class="hamburger">&#9776;</label>
+  <!-- Hidden Checkbox for Mobile -->
+  <input type="checkbox" id="menu-toggle" class="menu-toggle" />
+  <label for="menu-toggle" class="hamburger">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </label>
 
   <ul class="nav-links">
-    @if(session){
-    <li><a routerLink="session" routerLinkActive="active">Home</a></li>}
-    @else{
-      <li><a routerLink="" routerLinkActive="active">Home</a></li>
+    <!-- Home - Changes based on auth status -->
+    @if (isLoggedIn()) {
+      <li>
+        <a routerLink="/session" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <span class="nav-icon">🏠</span>
+          <span class="nav-text">Home</span>
+        </a>
+      </li>
+    } @else {
+      <li>
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <span class="nav-icon">🏠</span>
+          <span class="nav-text">Home</span>
+        </a>
+      </li>
     }
-    <li><a routerLink="History" routerLinkActive="active">History</a></li>
-    <li><a routerLink="About" routerLinkActive="active">About</a></li>
-    @if(session){
-    <li><a routerLink="about" routerLinkActive="active">Logout</a></li>}
-    @else{
-      <li><a routerLink="about" routerLinkActive="active">Login</a></li>
+
+    <!-- Order Link - Only for logged in users -->
+    @if (isLoggedIn()) {
+      <li>
+        <a routerLink="/session" routerLinkActive="active">
+          <span class="nav-icon">🍛</span>
+          <span class="nav-text">Order Biriyani</span>
+          @if (isBiriyaniFriday()) {
+            <span class="badge">Friday!</span>
+          }
+        </a>
+      </li>
+    }
+
+    <!-- History -->
+    <li>
+      <a routerLink="/History" routerLinkActive="active">
+        <span class="nav-icon">📜</span>
+        <span class="nav-text">History</span>
+      </a>
+    </li>
+
+    <!-- About -->
+    <li>
+      <a routerLink="/About" routerLinkActive="active">
+        <span class="nav-icon">ℹ️</span>
+        <span class="nav-text">About</span>
+      </a>
+    </li>
+
+    <!-- Auth Buttons -->
+    @if (isLoggedIn()) {
+      <li class="auth-section">
+        <div class="user-info">
+          <span class="user-icon">👤</span>
+          <span class="user-id">{{ employeeId() }}</span>
+        </div>
+        <a class="logout-btn" (click)="logout()" role="button">
+          <span class="nav-icon">🚪</span>
+          <span class="nav-text">Logout</span>
+        </a>
+      </li>
+    } @else {
+      <li>
+        <a routerLink="/Login" routerLinkActive="active" class="login-btn">
+          <span class="nav-icon">🔑</span>
+          <span class="nav-text">Login</span>
+        </a>
+      </li>
     }
   </ul>
 </div>

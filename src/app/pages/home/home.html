@@ -1,1 +1,76 @@
-<p>home works!</p>
+<div class="home-container">
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge" *ngIf="isBiriyaniFriday()">
+        🔥 It's Biriyani Friday! 🔥
+      </div>
+      <div class="hero-badge next-friday" *ngIf="!isBiriyaniFriday()">
+        Next Biriyani Friday: {{ nextFriday() | date:'EEEE, MMMM d' }}
+      </div>
+      
+      <h1 class="hero-title">
+        Welcome to <span class="highlight">BlackStraw Biriyani</span>
+      </h1>
+      <p class="hero-subtitle">
+        Your weekly dose of delicious biriyani delivered right to your desk. 
+        Login with your employee ID and order now!
+      </p>
+      
+      <div class="hero-buttons">
+        <button class="btn-primary" (click)="navigateToLogin()">
+          <span>🔑</span> Login to Order
+        </button>
+        <a routerLink="/About" class="btn-secondary">
+          <span>ℹ️</span> Learn More
+        </a>
+      </div>
+    </div>
+    
+    <div class="hero-decoration">
+      <div class="floating-biriyani">🍛</div>
+      <div class="floating-biriyani">🥘</div>
+      <div class="floating-biriyani">🍗</div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <h2 class="section-title">Why Choose Us?</h2>
+    <div class="features-grid">
+      @for (feature of features; track feature.title) {
+        <div class="feature-card">
+          <div class="feature-icon">{{ feature.icon }}</div>
+          <h3 class="feature-title">{{ feature.title }}</h3>
+          <p class="feature-description">{{ feature.description }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="how-it-works">
+    <h2 class="section-title">How It Works</h2>
+    <div class="steps-container">
+      @for (step of howItWorks; track step.step) {
+        <div class="step-card">
+          <div class="step-number">{{ step.step }}</div>
+          <div class="step-icon">{{ step.icon }}</div>
+          <h3 class="step-title">{{ step.title }}</h3>
+          <p class="step-description">{{ step.description }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-content">
+      <h2>Ready to Order?</h2>
+      <p>Login now and get your biriyani delivered!</p>
+      <button class="cta-button" (click)="navigateToLogin()">
+        <span>🍛</span> Order Your Biriyani
+      </button>
+    </div>
+  </section>
+</div>
